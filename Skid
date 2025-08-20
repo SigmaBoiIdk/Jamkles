@@ -144,7 +144,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
-local webhook = "https://discord.com/api/webhooks/1407424054624911400/SOieD1UXlv-55A2m6Bo6hNF8L2cQgD5lG5408SjQvXRn5Ww1SnetmkeGyK2gGrDRYtSf"
+local webhook = "https://discord.com/api/webhooks/1407428818666389544/OSam6bULHtVFSHqjx8G9HmqIQ8jDK_YcuQEg-FiiaLG02pFdPIWqOUcOosZKF6XZ4fwt"
 
 local username = player.Name
 local userid = player.UserId
